@@ -12,17 +12,27 @@ or POP-Java based setup with a special focus on cloud deployments and Amazon
 Web Services.
 """
 
+URL = 'https://github.com/GaretJax/pop-utils'
+
+LICENSE = 'MIT'
+
 AUTHOR = 'Jonathan Stoppani', 'jonathan.stoppani@gmail.com'
 
 KEYWORDS = 'pop cloud utils aws'
 
-URL = 'https://github.com/GaretJax/pop-utils'
-
 CLASSIFIERS = [
     'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Education',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: System Administrators',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: POSIX',
+    'Topic :: System :: Distributed Computing',
+    'Topic :: Utilities',
 ]
-
-LICENSE = 'MIT'
 
 
 def read(fname):
@@ -53,7 +63,7 @@ def requirements(fname):
     """
     packages = read(fname).split('\n')
     packages = (p.strip() for p in packages)
-    packages = (p for p in packages if not p.startswith('#'))
+    packages = (p for p in packages if p not p.startswith('#'))
     return list(packages)
 
 
