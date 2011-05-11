@@ -1,0 +1,3 @@
+# Requirements for the poputils library
+
+lxml==2.3
