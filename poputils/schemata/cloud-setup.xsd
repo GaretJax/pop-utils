@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+	<!-- CIDR -->
+	<xs:simpleType name="CIDR">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/(1[6-9]|2[0-8])"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!-- IPv4 address -->
+	<xs:simpleType name="IPv4">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Amazon machine types -->
+	<xs:simpleType name="aws-machine-type">
+		<xs:restriction base="xs:token">
+			<!--
+				<xs:enumeration value="t1.micro"/>  - Cannot be launched on a VPC 
+			-->
+			<xs:enumeration value="m1.small"/>   <!-- Cannot be launched with a custom AMI -->
+			<xs:enumeration value="c1.medium"/>  <!-- Cannot be launched with a custom AMI -->
+			<xs:enumeration value="m1.large"/>
+			<xs:enumeration value="m1.xlarge"/>
+			<xs:enumeration value="m2.xlarge"/>
+			<xs:enumeration value="m2.2xlarge"/>
+			<xs:enumeration value="m2.4xlarge"/>
+			<xs:enumeration value="c1.xlarge"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Network topology presets -->
+	<xs:simpleType name="simple-topology-presets">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="complete"/>
+			<xs:enumeration value="custom"/>
+			<xs:enumeration value="tree"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="k-ring-preset">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="[1-9]+-ring"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="topology-preset">
+		<xs:union memberTypes="k-ring-preset simple-topology-presets"/>
+	</xs:simpleType>
+	
+	<!-- Amazon AMI pattern -->
+	<xs:simpleType name="aws-ami">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="ami-[0-9a-f]{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Physical setup -->
+	<xs:complexType name="setup">
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" type="machine" name="machine"/>
+		</xs:sequence>
+	</xs:complexType>
+  
+	<xs:complexType name="machine">
+		<xs:attribute name="ip" use="required" type="IPv4"/>
+		<xs:attribute name="image" use="optional" type="aws-ami"/>
+		<xs:attribute name="type" use="optional" type="aws-machine-type"/>
+	</xs:complexType>
+  
+	<!-- Network setup -->
+	<xs:complexType name="topology">
+		<xs:sequence>
+			<xs:element type="link" name="link" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="preset" use="optional" type="topology-preset"/>
+	</xs:complexType>
+	
+	<xs:complexType name="link">
+		<xs:attribute name="node-a" use="required" type="IPv4"/>
+		<xs:attribute name="node-b" use="required" type="IPv4"/>
+	</xs:complexType>
+
+	<!-- Complete cloud setup -->
+	<xs:element name="cloud">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element type="setup" name="setup"/>
+				<xs:element type="topology" name="topology"/>
+			</xs:sequence>
+			
+			<xs:attribute name="cidr" use="required" type="CIDR"/>
+			<xs:attribute name="manager" use="optional" type="IPv4"/>
+		</xs:complexType>
+		
+		<!-- Ensure unique IP addresses -->
+		<xs:key name="ip-address">
+			<xs:selector xpath="setup/machine"/>
+			<xs:field xpath="@ip"/>
+		</xs:key>
+		
+		<!-- Ensure valid references -->
+		<xs:keyref refer="ip-address" name="manager-address">
+			<xs:selector xpath="."/>
+			<xs:field xpath="@manager"/>
+		</xs:keyref>
+		
+		<xs:keyref refer="ip-address" name="link-a-address">
+			<xs:selector xpath="topology/link"/>
+			<xs:field xpath="@node-a"/>
+		</xs:keyref>
+		
+		<xs:keyref refer="ip-address" name="link-b-address">
+			<xs:selector xpath="topology/link"/>
+			<xs:field xpath="@node-b"/>
+		</xs:keyref>
+	</xs:element>
+</xs:schema>

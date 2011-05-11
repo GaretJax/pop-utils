@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	
+	<!-- Amazon AMI pattern -->
+	<xs:simpleType name="aws-ami">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="ami-[0-9a-f]{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Amazon ami name -->
+	<!--
+			Constraints: 3-128 alphanumeric characters, parenthesis (()),
+			commas (,), slashes (/), dashes (-), or underscores(_)
+			
+			Source: http://docs.amazonwebservices.com/AWSEC2/latest/APIReference/index.html?ApiReference-query-CreateImage.html
+	-->
+	<xs:simpleType name="aws-ami-name">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="[a-zA-Z0-9,/_\(\)-]{3,128}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Amazon regions -->
+	<xs:simpleType name="aws-region">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="eu-west-1"/>
+			<xs:enumeration value="us-east-1"/>
+			<xs:enumeration value="ap-northeast-1"/>
+			<xs:enumeration value="us-west-1"/>
+			<xs:enumeration value="ap-southeast-1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="asset">
+		<xs:attribute name="asset" use="required" type="xs:NCName"/>
+	</xs:complexType>
+	
+	<xs:complexType name="manifest">
+		<xs:attribute name="manifest" use="required" type="xs:NCName"/>
+	</xs:complexType>
+	
+  <xs:element name="master">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="upload" type="asset"/>
+      	<xs:element name="apply" type="manifest"/>
+      </xs:choice>
+    	
+      <xs:attribute name="base" use="required" type="aws-ami"/>
+      <xs:attribute name="name" use="required" type="aws-ami-name"/>
+    	<xs:attribute name="description" use="optional"/>
+    	<xs:attribute name="region" use="optional" type="aws-region"/>
+      <xs:attribute name="public" use="optional" fixed="public"/>
+    </xs:complexType>
+  </xs:element>
+	
+</xs:schema>
