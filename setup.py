@@ -63,7 +63,7 @@ def requirements(fname):
     """
     packages = read(fname).split('\n')
     packages = (p.strip() for p in packages)
-    packages = (p for p in packages if p not p.startswith('#'))
+    packages = (p for p in packages if p and not p.startswith('#'))
     return list(packages)
 
 
