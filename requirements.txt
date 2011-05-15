@@ -1,3 +1,5 @@
 # Requirements for the poputils library
 
 lxml==2.3
+argparse==1.2.1
+boto==2.0b4
