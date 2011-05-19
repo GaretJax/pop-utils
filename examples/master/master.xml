@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<master
+	base="ami-4a0df923"
+	name="popc1_3-base-ubuntu-x86_64"
+	description="POP-C++, Puppet and Python support installed"
+	public="public">
+	
+	<upload asset="packages/popc.tar.gz"/>
+	<upload asset="scripts/service.sh"/>
+	
+	<apply manifest="manifests/packages.pp"/>
+	<apply manifest="manifests/popc.pp"/>
+	<apply manifest="manifests/poplinker.pp"/>
+	<apply manifest="manifests/ssh.pp"/>
+	
+</master>

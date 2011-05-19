@@ -1,6 +1,6 @@
 import base64
 
-from poputils.boto import error
+from poputils.boto import error, ec2
 
 import boto.vpc
 import boto.ec2.ec2object
@@ -19,6 +19,12 @@ class Address(boto.ec2.address.Address):
                
     def associate(self, instance):
         return self.connection.associate_address(instance.id, self.id)
+    
+    def disassociate(self):
+        self.connection.disassociate_address(self.association_id)
+    
+    def release(self):
+        self.connection.release_address(self.id)
     
 
 class InternetGateway(boto.ec2.ec2object.EC2Object):
@@ -145,7 +151,7 @@ class SecurityGroup(boto.ec2.securitygroup.SecurityGroup):
         return status
 
 
-class VPCConnection(boto.vpc.VPCConnection):
+class VPCConnection(boto.vpc.VPCConnection, ec2.EC2Connection):
     
     #
     # Security groups
@@ -222,9 +228,16 @@ class VPCConnection(boto.vpc.VPCConnection):
     def allocate_address(self):
         return self.get_object('AllocateAddress', {'Domain': 'vpc'}, Address, verb='POST')
     
+    def release_address(self, allocation_id):
+        return self.get_status('ReleaseAddress', {'AllocationId': allocation_id}, verb='POST')
+    
     def associate_address(self, instance_id, allocation_id):
         params = {'InstanceId' : instance_id, 'AllocationId' : allocation_id}
         return self.get_status('AssociateAddress', params, verb='POST')
+    
+    def disassociate_address(self, association_id):
+        params = {'AssociationId' : association_id}
+        return self.get_status('DisassociateAddress', params, verb='POST')
     
     def get_all_addresses(self, addresses=None, filters=None):
         """
@@ -266,6 +279,12 @@ class VPCConnection(boto.vpc.VPCConnection):
             'SubnetId': subnet_id,
         }
         return self.get_object('AssociateRouteTable', params, Route, verb='POST')
+
+    def delete_route_table(self, route_table_id):
+        params = {
+            'RouteTableId': route_table_id,
+        }
+        return self.get_status('CreateRoute', params, verb='POST')
 
     def create_route(self, route_table_id, cidr, instance_id=None, gateway_id=None):
         assert bool(instance_id) != bool(gateway_id)

@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 NAME = 'pop-utils'
 
-VERSION = '0.1'
+VERSION = '0.1b1'
 
 DESCRIPTION = """
 Collection of utilities to optimize the deployment and management of a POP-C++
@@ -80,7 +80,7 @@ setup(
     license=LICENSE,
     packages=find_packages(),
     package_data = {
-        'poputils': get_files('poputils.schemata')
+        'poputils': list(get_files('poputils.schemata')) + list(get_files('poputils.fabfiles')),
     },
     install_requires=requirements('requirements.txt'),
     entry_points=read('entry-points.ini'),

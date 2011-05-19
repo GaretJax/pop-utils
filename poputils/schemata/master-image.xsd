@@ -34,26 +34,26 @@
 	</xs:simpleType>
 	
 	<xs:complexType name="asset">
-		<xs:attribute name="asset" use="required" type="xs:NCName"/>
+		<xs:attribute name="asset" use="required" type="xs:string"/>
 	</xs:complexType>
 	
 	<xs:complexType name="manifest">
-		<xs:attribute name="manifest" use="required" type="xs:NCName"/>
+		<xs:attribute name="manifest" use="required" type="xs:string"/>
 	</xs:complexType>
 	
-  <xs:element name="master">
-    <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="upload" type="asset"/>
-      	<xs:element name="apply" type="manifest"/>
-      </xs:choice>
-    	
-      <xs:attribute name="base" use="required" type="aws-ami"/>
-      <xs:attribute name="name" use="required" type="aws-ami-name"/>
-    	<xs:attribute name="description" use="optional"/>
-    	<xs:attribute name="region" use="optional" type="aws-region"/>
-      <xs:attribute name="public" use="optional" fixed="public"/>
-    </xs:complexType>
-  </xs:element>
-	
+	<xs:element name="master">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="upload" type="asset"/>
+				<xs:element name="apply" type="manifest"/>
+			</xs:choice>
+
+			<xs:attribute name="base" use="required" type="aws-ami"/>
+			<xs:attribute name="name" use="required" type="aws-ami-name"/>
+			<xs:attribute name="description" use="optional"/>
+			<xs:attribute name="region" use="optional" type="aws-region"/>
+			<xs:attribute name="public" use="optional" fixed="public"/>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>

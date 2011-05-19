@@ -68,6 +68,41 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
+	<!-- Amazon VPC ID pattern -->
+	<xs:simpleType name="aws-vpc">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="vpc-[0-9a-f]{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Amazon subnet ID pattern -->
+	<xs:simpleType name="aws-subnet">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="subnet-[0-9a-f]{8}"/>
+		</xs:restriction>
+		
+	</xs:simpleType>
+	<!-- Amazon security group ID pattern -->
+	<xs:simpleType name="aws-security-group">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="sg-[0-9a-f]{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Amazon internet gateway ID pattern -->
+	<xs:simpleType name="aws-internet-gateway">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="igw-[0-9a-f]{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Amazon instance ID pattern -->
+	<xs:simpleType name="aws-instance">
+		<xs:restriction base="xs:token">
+			<xs:pattern value="i-[0-9a-f]{8}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<!-- Physical setup -->
 	<xs:complexType name="setup">
 		<xs:sequence>
@@ -93,19 +128,19 @@
 		<xs:attribute name="node-a" use="required" type="IPv4"/>
 		<xs:attribute name="node-b" use="required" type="IPv4"/>
 	</xs:complexType>
+	
+	<xs:complexType name="cloud-setup">
+		<xs:sequence>
+			<xs:element type="setup" name="setup"/>
+			<xs:element type="topology" name="topology"/>
+		</xs:sequence>
+		
+		<xs:attribute name="cidr" use="required" type="CIDR"/>
+		<xs:attribute name="manager" use="optional" type="IPv4"/>
+	</xs:complexType>
 
 	<!-- Complete cloud setup -->
-	<xs:element name="cloud">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element type="setup" name="setup"/>
-				<xs:element type="topology" name="topology"/>
-			</xs:sequence>
-			
-			<xs:attribute name="cidr" use="required" type="CIDR"/>
-			<xs:attribute name="manager" use="optional" type="IPv4"/>
-		</xs:complexType>
-		
+	<xs:element name="cloud" type="cloud-setup">
 		<!-- Ensure unique IP addresses -->
 		<xs:key name="ip-address">
 			<xs:selector xpath="setup/machine"/>

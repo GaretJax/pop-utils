@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+	<xs:include schemaLocation="cloud-setup.xsd"/>
+	
+	<xs:redefine schemaLocation="cloud-setup.xsd">
+		<xs:complexType name="cloud-setup">
+			<xs:complexContent>
+				<xs:extension base="cloud-setup">
+					<xs:attribute name="subnet" use="required" type="aws-subnet"/>
+					<xs:attribute name="public-address" use="required" type="IPv4"/>
+					<xs:attribute name="security-group" use="required" type="aws-security-group"/>
+					<xs:attribute name="key-pair" use="required" type="xs:string"/>
+					<xs:attribute name="key-filename" use="required" type="xs:string"/>
+					<xs:attribute name="vpc" use="required" type="aws-vpc"/>
+					<xs:attribute name="gateway" use="required" type="aws-internet-gateway"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+		
+		<xs:complexType name="machine">
+			<xs:complexContent>
+				<xs:extension base="machine">
+					<xs:attribute name="instance-id" use="required" type="aws-instance"/>
+					<xs:attribute name="launch-time" use="required" type="xs:dateTime"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:redefine>
+</xs:schema>

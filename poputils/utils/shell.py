@@ -4,12 +4,41 @@ Utilities to manage shell output and interaction.
 
 import sys
 import time
+import os
 
 
 GRAY, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
+def size():
+    def ioctl_GWINSZ(fd):
+        try:
+            import fcntl, termios, struct
+            cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+        except:
+            return None
+        return cr
+    cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
+    if not cr:
+        try:
+            fd = os.open(os.ctermid(), os.O_RDONLY)
+            cr = ioctl_GWINSZ(fd)
+            os.close(fd)
+        except:
+            pass
+    if not cr:
+        try:
+            cr = os.popen('stty size', 'r').read().split()
+        except:
+            pass
+    if not cr:
+        try:
+            cr = (os.environ['COLUMNS'], os.environ['LINES'])
+        except Exception:
+            cr = (80, 25)
+    return int(cr[1]), int(cr[0])
 
-def wait(obj, status, updater=None, interval=1, state='available'):
+
+def wait(obj, status, updater=None, interval=1, valid=()):
     """
     Waits until the ``state`` attribute of the ``obj`` object changes its value
     to ``status``.
@@ -27,9 +56,15 @@ def wait(obj, status, updater=None, interval=1, state='available'):
     sys.stdout.flush()
     cnt = 4
     
+    valid = set((obj.state, status) + valid)
+    
     while obj.state != status:
         time.sleep(interval)
         obj = updater(obj)
+        
+        if obj.state not in valid:
+            raise ValueError("Invalid state '{0}' detected; one of ({1}) "\
+                             "expected.".format(obj.state, ', '.join(valid)))
         
         if cnt > 1:
             sys.stdout.write('\b' * cnt + '.' + ' ' * (cnt-1))
@@ -47,6 +82,9 @@ def wait(obj, status, updater=None, interval=1, state='available'):
 class Step(object):
     
     width = 72
+    
+    class Skipped(Exception):
+        pass
     
     def __init__(self, step):
         self.step = step
@@ -70,22 +108,27 @@ class Step(object):
         
         d = time.time() - self.start
         if d >= 60:
-            t = ' ({0:02.0f}m {1:02.9f}s)'.format(d // 60, d % 60)
+            t = ' ({0:02.0f}m {1:02.0f}s)'.format(d // 60, d % 60)
         else:
             t = ' ({0:05.2f}s)'.format(d)
         
+        l = len(t)
+        
         if exc_type is None:
             s = 'SUCCESS'
-            l = len(s)
+            l += len(s)
             s = hilite(s, GREEN)
+        elif exc_type is self.Skipped:
+            s = 'SKIPPED'
+            l = len(s)
+            s = hilite(s, BLUE)
+            t = ''
         else:
             s = 'FAILED'
-            l = len(s)
+            l += len(s)
             s = hilite(s, RED)
         
-        l += len(t)
-        
-        if exc_type:
+        if exc_type and exc_type is not self.Skipped:
             err = exc_type.__name__ + ":"
             try:
                 msg = exc_val.args[0]
@@ -99,6 +142,8 @@ class Step(object):
         print ' ' * (self.width - l) + s + t
         
         print "-" * self.width
+        
+        return exc_type is self.Skipped
 
 
 class Indenter(object):
@@ -134,7 +179,18 @@ class Indenter(object):
         self.stdout.flush()
 
 
+def nowrap(text):
+    return Wrapper.Unwrapped(text)
+
+
 class Wrapper(object):
+    
+    class Unwrapped(str):
+        nowrap = True
+        
+        def __str__(self):
+            return self
+        
     def __init__(self, width=72, firstline=None):
         self.width = width
         self.first = firstline if firstline else width
@@ -150,6 +206,10 @@ class Wrapper(object):
 
     @staticmethod
     def wrap(text, width=72, firstline=None):
+        if getattr(text, 'nowrap', False):
+            return text
+        
+        text = str(text)
         linewidth = firstline if firstline else width
 
         l = 0
@@ -230,8 +290,12 @@ class Border(object):
 
 
 def main(parser, func):
-    parser.add_argument('-d', '--debug', action='store_true')
-    
+    parser.add_argument('-d', '--debug',
+        action='store_true',
+        default=False,
+        help="print the full traceback in case of an error",
+    )
+    args = None
     try:
         args = parser.parse_args()
         print '\n' + "-" * 72
@@ -239,12 +303,13 @@ def main(parser, func):
         print
         return status
     except Exception:
-        if args.debug:
+        if not args or getattr(args, 'debug', True):
             import traceback
             print
             print '\n'.join(traceback.format_exc().split('\n'))
         else:
-            print "\nThe command execution failed due to en error. Use the --debug option to\nprint the full traceback."
+            print "\nThe command execution failed due to en error. Use the " \
+                  "--debug option to\nprint the full traceback."
         print
         return 1
         

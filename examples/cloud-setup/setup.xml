@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud manager="10.0.0.4" cidr="10.0.0.0/24">
+	
+	<setup>
+		<machine ip="10.0.0.4" image="ami-4ece3027"  type="m2.4xlarge"/>
+		<machine ip="10.0.0.5" image="ami-4ece3027"  type="m2.4xlarge"/>
+		<machine ip="10.0.0.6" image="ami-4ece3027"  type="m2.4xlarge"/>
+		<machine ip="10.0.0.7" image="ami-4ece3027"  type="m2.4xlarge"/>
+		<machine ip="10.0.0.8" image="ami-4ece3027"  type="m2.4xlarge"/>
+		<machine ip="10.0.0.9" image="ami-4ece3027"  type="m2.4xlarge"/>
+		<machine ip="10.0.0.10" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.11" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.12" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.13" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.14" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.15" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.16" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.17" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.18" image="ami-4ece3027" type="m2.4xlarge"/>
+		<machine ip="10.0.0.19" image="ami-4ece3027" type="m2.4xlarge"/>
+	</setup>
+	
+	<topology preset="complete">
+	</topology>
+</cloud>

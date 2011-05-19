@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<cloud manager="10.0.1.4"
+       cidr="10.0.1.0/24"
+       subnet="subnet-e1f48888"
+       public-address="184.72.108.79"
+       security-group="sg-ac786ac0"
+       key-pair="pop-blprcytzgkqkxmvk"
+       key-filename="key.pem"
+       vpc="vpc-ce2f53a7"
+       gateway="igw-df2f53b6">
+	
+	<setup>
+		<machine ip="10.0.1.4"
+		         image="ami-4ece3027"
+		         type="m1.large"
+		         instance-id="i-f180419f"
+		         launch-time="2011-05-19T14:59:11.000Z"/>
+		<machine ip="10.0.1.5"
+		         image="ami-4ece3027"
+		         type="m1.large"
+		         instance-id="i-cb8041a5"
+		         launch-time="2011-05-19T14:59:12.000Z"/>
+	</setup>
+	
+	<topology/>
+</cloud>

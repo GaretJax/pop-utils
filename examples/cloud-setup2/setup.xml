@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cloud manager="10.0.1.4" cidr="10.0.1.0/24">
+	
+	<setup>
+		<machine ip="10.0.1.4" image="ami-4ece3027"  type="m1.large"/>
+		<machine ip="10.0.1.5" image="ami-4ece3027"  type="m1.large"/>
+	</setup>
+	
+	<topology></topology>
+</cloud>
