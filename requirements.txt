@@ -1,6 +1,6 @@
 # Requirements for the poputils library
 
-lxml==2.3
+lxml==4.9.1
 argparse==1.2.1
 boto==2.0b4
 Fabric==1.0.1
